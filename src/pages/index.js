@@ -111,7 +111,7 @@ const Home = () => {
         </button>
 
         {showPhotos && (
-          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-10'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-10'>
             {data.map((image) => (
               <div className='flex flex-col items-center' key={image.id}>
                 <div className='relative mb-3 w-full h-full'>
@@ -119,8 +119,8 @@ const Home = () => {
                     className='object-cover w-full h-full select-none'
                     src={image.imagePath}
                     alt='person'
-                    width={220}
-                    height={220}
+                    width={100}
+                    height={100}
                   />
                   <div className='absolute top-0 right-0 bg-gray-800 px-2 py-1 rounded'>
                     <p className={`text-sm font-semibold ${image.percentage > 50 ? 'text-green-300' : 'text-red-400'}`}>
@@ -133,7 +133,7 @@ const Home = () => {
                   <Select selected={image.id} />
 
                   <button
-                    className='ml-4 px-4 py-2 bg-blue-500 text-white rounded-md'
+                    className='ml-3 px-2 py-2 bg-blue-500 text-white rounded-md'
                     onClick={() => handleSubmit(image._id)}
                     disabled={isSubmitLoading[image._id]}>
                     {isSubmitLoading[image._id] ? 'Submitting...' : 'Submit'}
