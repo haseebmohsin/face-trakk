@@ -36,7 +36,7 @@ const Home = () => {
     setIsLoading(true);
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('video', file);
 
     axios
       .post('http://localhost:5000/api/video/upload', formData, {
@@ -133,6 +133,7 @@ const Home = () => {
         {isLoading && (
           <div className='w-full h-2 mt-2 bg-gray-300 rounded'>
             <div className='h-full bg-blue-500' style={{ width: `${uploadPercentage}%` }}></div>
+            <div className='text-center p-2 text-xl font-semibold'>{uploadPercentage}%</div>
           </div>
         )}
 
