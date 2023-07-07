@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Select from './components/customComponents/Select';
 import { toast } from 'react-hot-toast';
 import { facesData } from '@/data/data';
+import axios from 'axios';
 
 const Home = () => {
   const [file, setFile] = useState(null);
@@ -11,6 +12,7 @@ const Home = () => {
   const [error, setError] = useState('');
   const [showPhotos, setShowPhotos] = useState(false);
   const [data, setData] = useState(facesData);
+  const [uploadPercentage, setUploadPercentage] = useState(0);
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -33,12 +35,29 @@ const Home = () => {
 
     setIsLoading(true);
 
-    // Simulating processing time
-    setTimeout(() => {
-      setIsLoading(false);
-      setShowPhotos(true);
-      setFile(null); // Resetting the file after processing
-    }, 3000);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    axios
+      .post('http://localhost:5000/api/video/upload', formData, {
+        onUploadProgress: (progressEvent) => {
+          const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+          setUploadPercentage(progress);
+        },
+      })
+      .then((response) => {
+        setIsLoading(false);
+        setShowPhotos(true);
+        setFile(null);
+        setUploadPercentage(0);
+
+        toast.success('Video uploaded successfully');
+      })
+      .catch((error) => {
+        console.error({ error });
+        setIsLoading(false);
+        setError('Error uploading the file.');
+      });
   };
 
   const handleSubmit = (itemId) => {
@@ -109,6 +128,13 @@ const Home = () => {
         <button className='w-full px-4 py-2 mt-4 bg-blue-500 text-white rounded-md' onClick={handleUpload}>
           {isLoading ? 'Processing...' : 'Upload'}
         </button>
+
+        {/* Progress Bar */}
+        {isLoading && (
+          <div className='w-full h-2 mt-2 bg-gray-300 rounded'>
+            <div className='h-full bg-blue-500' style={{ width: `${uploadPercentage}%` }}></div>
+          </div>
+        )}
 
         {showPhotos && (
           <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-10'>
