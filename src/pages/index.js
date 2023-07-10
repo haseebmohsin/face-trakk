@@ -39,7 +39,7 @@ const Home = () => {
     formData.append('video', file);
 
     axios
-      .post('http://localhost:5000/api/video/upload', formData, {
+      .post(`${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/api/video/upload`, formData, {
         onUploadProgress: (progressEvent) => {
           const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
           setUploadPercentage(progress);
