@@ -6,13 +6,14 @@ import { facesData } from '@/data/data';
 import axios from 'axios';
 
 const Home = () => {
-  const [file, setFile] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSubmitLoading, setIsSubmitLoading] = useState({});
-  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [showPhotos, setShowPhotos] = useState(false);
-  const [data, setData] = useState(facesData);
+
+  const [file, setFile] = useState(null);
   const [uploadPercentage, setUploadPercentage] = useState(0);
+  const [data, setData] = useState([]);
+  const [error, setError] = useState('');
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -27,7 +28,7 @@ const Home = () => {
     setError('');
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!file) {
       setError('Please choose a file.');
       return;
@@ -38,26 +39,29 @@ const Home = () => {
     const formData = new FormData();
     formData.append('video', file);
 
-    axios
-      .post(`${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/api/video/upload`, formData, {
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/api/video/upload`, formData, {
         onUploadProgress: (progressEvent) => {
           const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
           setUploadPercentage(progress);
         },
-      })
-      .then((response) => {
+      });
+
+      if (response) {
         setIsLoading(false);
         setShowPhotos(true);
         setFile(null);
         setUploadPercentage(0);
 
-        toast.success('Video uploaded successfully');
-      })
-      .catch((error) => {
-        console.error({ error });
-        setIsLoading(false);
-        setError('Error uploading the file.');
-      });
+        setData(response?.data.faces);
+
+        toast.success(response?.data.message);
+      }
+    } catch (error) {
+      console.error({ error });
+      setIsLoading(false);
+      setError('Error uploading the file.');
+    }
   };
 
   const handleSubmit = (itemId) => {
@@ -130,7 +134,7 @@ const Home = () => {
         </button>
 
         {/* Progress Bar */}
-        {isLoading && (
+        {isLoading && uploadPercentage != 100 && (
           <div className='w-full h-2 mt-2 bg-gray-300 rounded'>
             <div className='h-full bg-blue-500' style={{ width: `${uploadPercentage}%` }}></div>
             <div className='text-center p-2 text-xl font-semibold'>{uploadPercentage}%</div>
@@ -140,24 +144,25 @@ const Home = () => {
         {showPhotos && (
           <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-10'>
             {data.map((image) => (
-              <div className='flex flex-col items-center' key={image.id}>
+              <div className='flex flex-col items-center' key={image._id}>
                 <div className='relative mb-3 w-full h-full'>
                   <Image
                     className='object-cover w-full h-full select-none'
-                    src={image.imagePath}
+                    src={`/faces/${image.path}?timestamp=${new Date().getTime()}`}
                     alt='person'
                     width={100}
                     height={100}
                   />
-                  <div className='absolute top-0 right-0 bg-gray-800 px-2 py-1 rounded'>
+
+                  {/* <div className='absolute top-0 right-0 bg-gray-800 px-2 py-1 rounded'>
                     <p className={`text-sm font-semibold ${image.percentage > 50 ? 'text-green-300' : 'text-red-400'}`}>
                       {image.percentage}%
                     </p>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className='flex flex-row items-center justify-between w-full'>
-                  <Select selected={image.id} />
+                  <Select selected={image._id} />
 
                   <button
                     className='ml-3 px-2 py-2 bg-blue-500 text-white rounded-md'
