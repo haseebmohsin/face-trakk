@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import Image from 'next/image';
+import React, { useState, useEffect } from 'react';
 import Select from './components/customComponents/Select';
 import { toast } from 'react-hot-toast';
-import { facesData } from '@/data/data';
 import axios from 'axios';
 
 const Home = () => {
@@ -89,6 +87,24 @@ const Home = () => {
     event.preventDefault();
   };
 
+  const [isDataLoading, setIsDataLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/api/video/getData`);
+
+        setData(response?.data.faces);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+
+      setIsDataLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <main className='max-w-7xl mx-auto p-4'>
       <div className='flex flex-col items-center'>
@@ -141,40 +157,36 @@ const Home = () => {
           </div>
         )}
 
-        {showPhotos && (
-          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-10'>
-            {data.map((image) => (
-              <div className='flex flex-col items-center' key={image._id}>
-                <div className='relative mb-3 w-full h-full'>
-                  <Image
-                    className='object-cover w-full h-full select-none'
-                    src={`/faces/${image.path}?timestamp=${new Date().getTime()}`}
-                    alt='person'
-                    width={100}
-                    height={100}
-                  />
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-10'>
+          {data.map((image, index) => (
+            <div key={image._id} className='flex flex-col items-center'>
+              <div className='relative mb-3 w-full h-full'>
+                <img
+                  className='object-cover w-full h-full select-none'
+                  src={`data:image/jpeg;base64,${image.image}`}
+                  alt='person'
+                />
 
-                  {/* <div className='absolute top-0 right-0 bg-gray-800 px-2 py-1 rounded'>
+                {/* <div className='absolute top-0 right-0 bg-gray-800 px-2 py-1 rounded'>
                     <p className={`text-sm font-semibold ${image.percentage > 50 ? 'text-green-300' : 'text-red-400'}`}>
                       {image.percentage}%
                     </p>
                   </div> */}
-                </div>
-
-                <div className='flex flex-row items-center justify-between w-full'>
-                  <Select selected={image._id} />
-
-                  <button
-                    className='ml-3 px-2 py-2 bg-blue-500 text-white rounded-md'
-                    onClick={() => handleSubmit(image._id)}
-                    disabled={isSubmitLoading[image._id]}>
-                    {isSubmitLoading[image._id] ? 'Submitting...' : 'Submit'}
-                  </button>
-                </div>
               </div>
-            ))}
-          </div>
-        )}
+
+              <div className='flex flex-row items-center justify-between w-full'>
+                <Select selected={image.name} />
+
+                <button
+                  className='ml-3 px-2 py-2 bg-blue-500 text-white rounded-md'
+                  onClick={() => handleSubmit(image._id)}
+                  disabled={isSubmitLoading[image._id]}>
+                  {isSubmitLoading[image._id] ? 'Submitting...' : 'Submit'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </main>
   );

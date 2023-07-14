@@ -13,11 +13,13 @@ const options = [
 ];
 
 function Select({ selected, onChange }) {
-  const [selectedValue, setSelectedValue] = useState(selected);
+  const [selectedValue, setSelectedValue] = useState(selected || 'unknown');
 
   const handleChange = (event) => {
-    const selectedValue = event.target.value;
-    setSelectedValue(selectedValue);
+    setSelectedValue(event.target.value);
+    if (onChange) {
+      onChange(selectedValue);
+    }
   };
 
   return (
@@ -26,8 +28,8 @@ function Select({ selected, onChange }) {
       className='bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-lg block w-full p-2.5'
       value={selectedValue}
       onChange={handleChange}>
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
+      {options.map((option, index) => (
+        <option key={index} value={option.value}>
           {option.label}
         </option>
       ))}
