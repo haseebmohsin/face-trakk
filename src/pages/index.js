@@ -157,6 +157,10 @@ const Home = () => {
           </div>
         )}
 
+        {isDataLoading && <div className='m-6 text-lg'>Loading data...</div>}
+
+        {!isDataLoading && data.length === 0 && <div className='m-14 text-lg'>No data found.</div>}
+
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-10'>
           {data.map((image, index) => (
             <div key={image._id} className='flex flex-col items-center'>
