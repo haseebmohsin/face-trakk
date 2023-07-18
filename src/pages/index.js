@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import Select from './components/customComponents/Select';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 
 const Home = () => {
-  const [isSubmitLoading, setIsSubmitLoading] = useState({});
+  const router = useRouter();
+
   const [isLoading, setIsLoading] = useState(false);
-  const [showPhotos, setShowPhotos] = useState(false);
+  const [isClusterDataFetchLoading, setIsClusterDataFetchLoading] = useState(true);
 
   const [file, setFile] = useState(null);
   const [uploadPercentage, setUploadPercentage] = useState(0);
-  const [data, setData] = useState([]);
+  const [clusterData, setClusterData] = useState([]);
   const [error, setError] = useState('');
 
   const handleFileChange = (event) => {
@@ -47,11 +48,10 @@ const Home = () => {
 
       if (response) {
         setIsLoading(false);
-        setShowPhotos(true);
         setFile(null);
         setUploadPercentage(0);
 
-        setData(response?.data.faces);
+        setClusterData(response?.data.clusters);
 
         toast.success(response?.data.message);
       }
@@ -62,44 +62,22 @@ const Home = () => {
     }
   };
 
-  const handleSubmit = (itemId) => {
-    setIsSubmitLoading((prevLoadingState) => ({
-      ...prevLoadingState,
-      [itemId]: true, // Set the loading state of the specific item to true
-    }));
-
-    // Simulating submitting time
-    setTimeout(() => {
-      // Filter out the clicked item from the data array
-      const updatedData = data.filter((item) => item._id !== itemId);
-      setData(updatedData);
-
-      setIsSubmitLoading((prevLoadingState) => ({
-        ...prevLoadingState,
-        [itemId]: false, // Set the loading state of the specific item to false
-      }));
-
-      toast.success('Thanks for the correction');
-    }, 1000);
-  };
-
   const handleDragOver = (event) => {
     event.preventDefault();
   };
 
-  const [isDataLoading, setIsDataLoading] = useState(true);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/api/video/getData`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/api/video/getClustersData`);
 
-        setData(response?.data.faces);
+        setClusterData(response?.data.clusters);
+        console.log(response?.data.clusters);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
 
-      setIsDataLoading(false);
+      setIsClusterDataFetchLoading(false);
     };
 
     fetchData();
@@ -145,7 +123,12 @@ const Home = () => {
         {error && <p className='mt-2 text-red-500'>{error}</p>}
 
         {/* Upload Button */}
-        <button className='w-full px-4 py-2 mt-4 bg-blue-500 text-white rounded-md' onClick={handleUpload}>
+        <button
+          className={`w-full px-4 py-2 mt-4 rounded-md ${
+            isLoading ? 'cursor-not-allowed bg-blue-200' : 'bg-blue-500 text-white'
+          }`}
+          onClick={handleUpload}
+          disabled={isLoading}>
           {isLoading ? 'Processing...' : 'Upload'}
         </button>
 
@@ -157,36 +140,17 @@ const Home = () => {
           </div>
         )}
 
-        {isDataLoading && <div className='m-6 text-lg'>Loading data...</div>}
+        {isClusterDataFetchLoading && <div className='m-6 text-lg'>Loading data...</div>}
 
-        {!isDataLoading && data.length === 0 && <div className='m-14 text-lg'>No data found.</div>}
+        {!isClusterDataFetchLoading && clusterData?.length === 0 && <div className='m-14 text-lg'>No data found.</div>}
 
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-10'>
-          {data.map((image, index) => (
-            <div key={image._id} className='flex flex-col items-center'>
-              <div className='relative mb-3 w-full h-full'>
-                <img
-                  className='object-cover w-full h-full select-none'
-                  src={`data:image/jpeg;base64,${image.image}`}
-                  alt='person'
-                />
+        <div className='grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-10'>
+          {clusterData?.map((item, index) => (
+            <div key={item._id} className='flex flex-col items-center' onClick={() => router.push(`/clusterDetails/${item._id}`)}>
+              <div className='relative mb-3 w-full h-full bg-blue-200 p-12 rounded-md cursor-pointer'>
+                {/* <img className='object-cover w-full h-full select-none' src={`data:item/jpeg;base64,${item.item}`} alt='person' /> */}
 
-                {/* <div className='absolute top-0 right-0 bg-gray-800 px-2 py-1 rounded'>
-                    <p className={`text-sm font-semibold ${image.percentage > 50 ? 'text-green-300' : 'text-red-400'}`}>
-                      {image.percentage}%
-                    </p>
-                  </div> */}
-              </div>
-
-              <div className='flex flex-row items-center justify-between w-full'>
-                <Select selected={image.name} />
-
-                <button
-                  className='ml-3 px-2 py-2 bg-blue-500 text-white rounded-md'
-                  onClick={() => handleSubmit(image._id)}
-                  disabled={isSubmitLoading[image._id]}>
-                  {isSubmitLoading[image._id] ? 'Submitting...' : 'Submit'}
-                </button>
+                <span>{item.clusterName}</span>
               </div>
             </div>
           ))}
