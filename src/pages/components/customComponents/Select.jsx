@@ -1,32 +1,27 @@
 import React, { useState } from 'react';
 
 const options = [
-  { value: 'unknown', label: 'Unknown' },
-  { value: 'imran', label: 'Imran Khan' },
-  { value: 'shahbaz', label: 'Shahbaz Shareef' },
-  { value: 'hamid-mir', label: 'Hamid Mir' },
-  { value: 'ahsan-iqbal', label: 'Ahsan Iqbal' },
-  { value: 'zardari', label: 'Zardari' },
-  { value: 'nawaz', label: 'Nawaz Shareef' },
-  { value: 'bilawal', label: 'Bilawal' },
-  { value: 'imran-riaz', label: 'Imran Riaz' },
+  { value: 'Unknown', label: 'Unknown' },
+  { value: 'Imran Khan', label: 'Imran Khan' },
+  { value: 'Nawaz Shareef', label: 'Nawaz Shareef' },
+  { value: 'Shahbaz Shareef', label: 'Shahbaz Shareef' },
+  { value: 'Zardari', label: 'Zardari' },
+  { value: 'Bilawal Bhutto', label: 'Bilawal Bhutto' },
+  { value: 'Hamid Mir', label: 'Hamid Mir' },
+  { value: 'Ahsan Iqbal', label: 'Ahsan Iqbal' },
+  { value: 'Attaullah Tarar', label: 'Attaullah Tarar' },
 ];
 
-function Select({ selected, onChange }) {
-  const [selectedValue, setSelectedValue] = useState(selected || 'unknown');
-
+function Select({ selected, setCorrectedName }) {
   const handleChange = (event) => {
-    setSelectedValue(event.target.value);
-    if (onChange) {
-      onChange(selectedValue);
-    }
+    setCorrectedName(event.target.value);
   };
 
   return (
     <select
       id='persons'
       className='bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-lg block w-full p-2.5'
-      value={selectedValue}
+      value={selected}
       onChange={handleChange}>
       {options.map((option, index) => (
         <option key={index} value={option.value}>

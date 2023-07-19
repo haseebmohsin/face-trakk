@@ -9,9 +9,10 @@ const ClusterDetails = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const [isSubmitLoading, setIsSubmitLoading] = useState({});
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [clusterDetailsData, setClusterDetailsData] = useState(null);
+  const [correctedName, setCorrectedName] = useState('');
 
   useEffect(() => {
     if (id) {
@@ -31,29 +32,48 @@ const ClusterDetails = () => {
     setIsPageLoading(false);
   };
 
-  const handleSubmit = (itemId) => {
-    setIsSubmitLoading((prevLoadingState) => ({
-      ...prevLoadingState,
-      [itemId]: true, // Set the loading state of the specific item to true
-    }));
+  const handleSubmit = (id, clusterName) => {
+    setIsSubmitLoading(true);
 
-    // Simulating submitting time
     setTimeout(() => {
-      // Filter out the clicked item from the data array
-      const updatedData = data.filter((item) => item._id !== itemId);
-      setData(updatedData);
+      // // Filter out the clicked item from the data array
+      // const updatedData = data.filter((item) => item._id !== itemId);
+      // setData(updatedData);
 
-      setIsSubmitLoading((prevLoadingState) => ({
-        ...prevLoadingState,
-        [itemId]: false, // Set the loading state of the specific item to false
-      }));
+      // setIsSubmitLoading((prevLoadingState) => ({
+      //   ...prevLoadingState,
+      //   [itemId]: false, // Set the loading state of the specific item to false
+      // }));
+
+      const data = {
+        clusterName,
+        correctedName,
+        oldNamesArray: clusterDetailsData?.faceImagesArray.map((item) => item.faceName),
+      };
+
+      console.log(data);
 
       toast.success('Thanks for the correction');
-    }, 1000);
+      setIsSubmitLoading(false);
+    }, 2000);
   };
 
   return (
-    <div className='max-w-7xl mx-auto flex '>
+    <div className='max-w-7xl mx-auto'>
+      <div className='flex w-72 mb-3'>
+        <Select
+          selected={clusterDetailsData?.faceImagesArray[0].faceName.replace(/[0-9]/g, '')}
+          setCorrectedName={setCorrectedName}
+        />
+
+        <button
+          className='ml-3 px-2 py-2 bg-blue-500 text-white rounded-md'
+          onClick={() => handleSubmit(clusterDetailsData?._id, clusterDetailsData?.clusterName)}
+          disabled={isSubmitLoading[clusterDetailsData?._id]}>
+          {isSubmitLoading[clusterDetailsData?._id] ? 'Submitting...' : 'Submit'}
+        </button>
+      </div>
+
       {isPageLoading && <div>Loading Details...</div>}
 
       {!isPageLoading && clusterDetailsData && (
@@ -72,17 +92,6 @@ const ClusterDetails = () => {
           ))}
         </div>
       )}
-
-      <div className='flex flex-row items-center justify-between w-72'>
-        <Select selected={clusterDetailsData?.clusterName} />
-
-        <button
-          className='ml-3 px-2 py-2 bg-blue-500 text-white rounded-md'
-          onClick={() => handleSubmit(clusterDetailsData?._id)}
-          disabled={isSubmitLoading[clusterDetailsData?._id]}>
-          {isSubmitLoading[clusterDetailsData?._id] ? 'Submitting...' : 'Submit'}
-        </button>
-      </div>
     </div>
   );
 };

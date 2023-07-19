@@ -72,7 +72,6 @@ const Home = () => {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/api/video/getClustersData`);
 
         setClusterData(response?.data.clusters);
-        console.log(response?.data.clusters);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
