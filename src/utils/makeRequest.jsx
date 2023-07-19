@@ -29,10 +29,19 @@ const makeRequest = async ({ method = 'GET', path, params, data }) => {
   }
 
   try {
-    const response = await axios(options);
+    const response = await axios(options, {
+      onUploadProgress: (progressEvent) => {
+        const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+        setUploadPercentage(progress);
+      },
+    });
 
     return response.data;
   } catch (error) {
+    if (error.message === 'Network Error') {
+      return Promise.reject({ status: 500, message: 'Network Error' });
+    }
+
     const { status, data } = error?.response;
 
     if (status === 404 || status === 500) {

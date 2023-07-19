@@ -12,7 +12,7 @@ const ClusterDetails = () => {
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [clusterDetailsData, setClusterDetailsData] = useState(null);
-  const [correctedName, setCorrectedName] = useState('');
+  const [correctedName, setCorrectedName] = useState(clusterDetailsData?.faceImagesArray[0]?.faceName.replace(/[0-9]/g, ''));
 
   useEffect(() => {
     if (id) {
@@ -24,7 +24,6 @@ const ClusterDetails = () => {
     try {
       const response = await makeRequest({ path: `api/video/getClusterData/${id}` });
       setClusterDetailsData(response.cluster);
-      console.log(response.cluster.faceImagesArray[0].faceName);
     } catch (error) {
       toast.error(error?.message || 'Something went wrong!');
     }
@@ -32,45 +31,56 @@ const ClusterDetails = () => {
     setIsPageLoading(false);
   };
 
-  const handleSubmit = (id, clusterName) => {
+  const handleSubmit = async () => {
     setIsSubmitLoading(true);
 
-    setTimeout(() => {
-      // // Filter out the clicked item from the data array
-      // const updatedData = data.filter((item) => item._id !== itemId);
-      // setData(updatedData);
+    const data = {
+      cluster_id: clusterDetailsData._id,
+      xml_path: 'scripts/dataset_generate',
+      old_names_array: clusterDetailsData?.faceImagesArray.map((item) => item.faceName),
+      new_label: correctedName,
+    };
 
-      // setIsSubmitLoading((prevLoadingState) => ({
-      //   ...prevLoadingState,
-      //   [itemId]: false, // Set the loading state of the specific item to false
-      // }));
+    try {
+      const response = await makeRequest({
+        method: 'POST',
+        path: 'api/video/xmlUpdate',
+        data,
+      });
 
-      const data = {
-        clusterName,
-        correctedName,
-        oldNamesArray: clusterDetailsData?.faceImagesArray.map((item) => item.faceName),
-      };
+      console.log(response);
 
-      console.log(data);
+      if (response) {
+        toast.success('Thanks for the correction');
+        router.push('/');
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.message || 'Something went wrong!');
+    }
 
-      toast.success('Thanks for the correction');
-      setIsSubmitLoading(false);
-    }, 2000);
+    setIsSubmitLoading(false);
+  };
+
+  const handleOnDiscard = (faceName) => {
+    // Filter out the clicked item based on faceName
+    const updatedFaceImagesArray = clusterDetailsData.faceImagesArray.filter((item) => item.faceName !== faceName);
+    setClusterDetailsData((prevData) => ({
+      ...prevData,
+      faceImagesArray: updatedFaceImagesArray,
+    }));
   };
 
   return (
     <div className='max-w-7xl mx-auto'>
       <div className='flex w-72 mb-3'>
-        <Select
-          selected={clusterDetailsData?.faceImagesArray[0].faceName.replace(/[0-9]/g, '')}
-          setCorrectedName={setCorrectedName}
-        />
+        <Select selected={correctedName} onChange={(selected) => setCorrectedName(selected)} />
 
         <button
           className='ml-3 px-2 py-2 bg-blue-500 text-white rounded-md'
           onClick={() => handleSubmit(clusterDetailsData?._id, clusterDetailsData?.clusterName)}
-          disabled={isSubmitLoading[clusterDetailsData?._id]}>
-          {isSubmitLoading[clusterDetailsData?._id] ? 'Submitting...' : 'Submit'}
+          disabled={isSubmitLoading}>
+          {isSubmitLoading ? 'Processing...' : 'Submit'}
         </button>
       </div>
 
@@ -79,7 +89,13 @@ const ClusterDetails = () => {
       {!isPageLoading && clusterDetailsData && (
         <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 mt-2'>
           {clusterDetailsData.faceImagesArray.map((item) => (
-            <div key={item.faceName} className=' p-2 rounded-md'>
+            <div key={item.faceName} className='p-2 rounded-md relative'>
+              <div
+                className='absolute top-1 right-3 cursor-pointer rounded-full bg-gray-400'
+                onClick={() => handleOnDiscard(item.faceName)}>
+                <strong class='text-3xl text-red-600'>&times;</strong>
+              </div>
+
               <Image
                 src={`data:image/jpeg;base64,${item.faceImage}`}
                 alt={item.faceName}

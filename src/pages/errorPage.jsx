@@ -29,7 +29,7 @@ const ErrorPage = () => {
 
         <div
           className='flex justify-center items-center cursor-pointer border border-green-300 p-2'
-          onClick={() => router.push('/dashboard')}>
+          onClick={() => router.push('/')}>
           <Image src='/svg/home.svg' alt='home' width={25} height={25} />
           <p className='text-center mx-3'>Back to Home</p>
         </div>

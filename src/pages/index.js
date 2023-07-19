@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
 import { useRouter } from 'next/router';
+import makeRequest from '@/utils/makeRequest';
+import axios from 'axios';
 
 const Home = () => {
   const router = useRouter();
@@ -51,12 +52,11 @@ const Home = () => {
         setFile(null);
         setUploadPercentage(0);
 
-        setClusterData(response?.data.clusters);
+        setClusterData(response?.data?.clusters);
 
-        toast.success(response?.data.message);
+        toast.success(response?.data?.message);
       }
     } catch (error) {
-      console.error({ error });
       setIsLoading(false);
       setError('Error uploading the file.');
     }
@@ -69,11 +69,11 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/api/video/getClustersData`);
+        const response = await makeRequest({ path: `api/video/getClustersData` });
 
-        setClusterData(response?.data.clusters);
+        setClusterData(response?.clusters);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        toast.error(error?.message || 'Something went wrong!');
       }
 
       setIsClusterDataFetchLoading(false);
