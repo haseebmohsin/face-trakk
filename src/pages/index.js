@@ -3,6 +3,7 @@ import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/router';
 import makeRequest from '@/utils/makeRequest';
 import axios from 'axios';
+import Image from 'next/image';
 
 const Home = () => {
   const router = useRouter();
@@ -146,10 +147,17 @@ const Home = () => {
         <div className='grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-10'>
           {clusterData?.map((item, index) => (
             <div key={item._id} className='flex flex-col items-center' onClick={() => router.push(`/clusterDetails/${item._id}`)}>
-              <div className='relative mb-3 w-full h-full bg-blue-200 p-12 rounded-md cursor-pointer'>
-                {/* <img className='object-cover w-full h-full select-none' src={`data:item/jpeg;base64,${item.item}`} alt='person' /> */}
+              <div className='p-2 rounded-md relative cursor-pointer'>
+                <Image
+                  className='cursor-pointer rounded-md transition-transform hover:scale-105'
+                  src={`data:item/jpeg;base64,${item.faceImagesArray[0]?.faceImage}`}
+                  alt='person'
+                  width={180}
+                  height={80}
+                  objectFit='cover'
+                />
 
-                <span>{item.clusterName}</span>
+                <p className='text-center mt-2 text-xl'>{item.faceImagesArray[0]?.faceName.replace(/[0-9]/g, '')}</p>
               </div>
             </div>
           ))}

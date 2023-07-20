@@ -89,11 +89,11 @@ const ClusterDetails = () => {
       {!isPageLoading && clusterDetailsData && (
         <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 mt-2'>
           {clusterDetailsData.faceImagesArray.map((item) => (
-            <div key={item.faceName} className='p-2 rounded-md relative'>
+            <div key={item.faceName} className='p-1 rounded-md relative select-none'>
               <div
-                className='absolute top-1 right-3 cursor-pointer rounded-full bg-gray-400'
+                className='absolute top-0 right-3 cursor-pointer rounded-full bg-gray-400 px-2'
                 onClick={() => handleOnDiscard(item.faceName)}>
-                <strong class='text-3xl text-red-600'>&times;</strong>
+                <strong class='text-2xl text-red-600'>&times;</strong>
               </div>
 
               <Image
