@@ -12,7 +12,7 @@ const Layout = ({ children }) => {
       <ToastProvider />
       <Header />
 
-      <main className='pb-32 pt-28' style={{ minHeight: 'calc(100vh - 84px)' }}>
+      <main className='pb-32 pt-20' style={{ minHeight: 'calc(100vh - 84px)' }}>
         {children}
       </main>
     </>

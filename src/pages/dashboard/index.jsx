@@ -114,7 +114,7 @@ function Dashboard() {
 
   return (
     <>
-      <div className='flex justify-center p-6 mt-16 max-w-7xl mx-auto'>
+      <div className='flex justify-center p-6 mt-4 max-w-7xl mx-auto'>
         <div className='relative dark:bg-gray-800 overflow-hidden w-[90%]'>
           <div className='flex flex-col gap-6 p-1 mb-3'>
             <div className='flex flex-col md:flex-row justify-center items-center gap-2'>
@@ -160,7 +160,7 @@ function Dashboard() {
               <Button onClick={() => console.log('clicking create new label')}>Create Label</Button>
             </div>
 
-            <Table>
+            <Table noAction>
               <TableHead entries={entries} />
 
               {/* Conditionally render TableBody based on the value of showData */}
