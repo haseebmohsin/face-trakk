@@ -1,48 +1,32 @@
-const data = [
+export const data = [
   {
-    imagePath: '/images/hamid-mir.jpg',
-    percentage: 98,
-    id: 'hamid-mir',
+    _id: 1,
+    tags: '---',
+    personName: 'Attaullah Tarar',
+    thumbnail: '/images/tarar.jpg',
+    channel: '/images/geo-logo.png',
+    startTime: '3:00 PM',
+    endTime: '4:30 PM',
+    coverageTime: '1h 30min',
   },
   {
-    imagePath: '/images/shahbaz.jpg',
-    percentage: 76,
-    id: 'shahbaz',
+    _id: 2,
+    tags: '---',
+    personName: 'Hamid Mir',
+    thumbnail: '/images/hamid.jpg',
+    channel: '/images/geo-logo.png',
+    startTime: '10:30 AM',
+    endTime: '11:45 AM',
+    coverageTime: '1h 15min',
   },
   {
-    imagePath: '/images/imran.jpg',
-    percentage: 88,
-    id: 'imran',
-  },
-  {
-    imagePath: '/images/zardari.jpg',
-    percentage: 0,
-    id: 'unknown',
-  },
-  {
-    imagePath: '/images/nawaz-shareef.jpg',
-    percentage: 3,
-    id: 'nawaz',
-  },
-  {
-    imagePath: '/images/bilawal-bhutto.jpg',
-    percentage: 49,
-    id: 'bilawal',
-  },
-  {
-    imagePath: '/images/ahsan-iqbal.jpg',
-    percentage: 50,
-    id: 'ahsan-iqbal',
-  },
-  {
-    imagePath: '/images/imran-riaz.jpg',
-    percentage: 88,
-    id: 'imran-riaz',
+    _id: 3,
+    tags: '---',
+    personName: 'Unknown',
+    thumbnail: '/images/unknown.jpg',
+    channel: '/images/geo-logo.png',
+    startTime: '8:45 AM',
+    endTime: '9:30 AM',
+    coverageTime: '45min',
   },
 ];
-
-// Add _id property with incremental values
-export const facesData = data.map((item, index) => ({
-  _id: index + 1,
-  ...item,
-}));

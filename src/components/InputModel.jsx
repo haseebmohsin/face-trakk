@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import Input from './customComponents/Input';
-import Button from './customComponents/Button';
 import makeRequest from '@/utils/makeRequest';
 import { toast } from 'react-hot-toast';
+import Input from './Input';
+import Button from './Button';
 
 const InputModel = ({ isOpen, closeModal }) => {
   if (!isOpen) return null;
