@@ -74,7 +74,7 @@ const ClusterDetails = () => {
 
       if (response) {
         toast.success('Thanks for the correction');
-        router.push('/');
+        router.push('/training');
       }
     } catch (error) {
       toast.error(error?.message || 'Something went wrong!');
@@ -104,7 +104,7 @@ const ClusterDetails = () => {
 
       if (response) {
         toast.success(response?.message);
-        router.push('/');
+        router.push('/training');
       }
     } catch (error) {
       toast.error(error?.message || 'Something went wrong!');

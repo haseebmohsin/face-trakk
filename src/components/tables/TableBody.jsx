@@ -94,8 +94,8 @@ export default function TableBody(props) {
   );
 
   return (
-    <tbody>
-      {isLoading ? renderLoadingRow() : data?.length > 0 ? renderDataRow() : renderEmptyRow()}
+    <>
+      <tbody>{isLoading ? renderLoadingRow() : data?.length > 0 ? renderDataRow() : renderEmptyRow()}</tbody>
 
       <VideoPlayerModal
         isOpen={isVideoPlayerOpen}
@@ -103,6 +103,6 @@ export default function TableBody(props) {
         videoUrl='/videos/output.mp4'
         startTime={startTime}
       />
-    </tbody>
+    </>
   );
 }

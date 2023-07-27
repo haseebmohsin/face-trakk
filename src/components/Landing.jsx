@@ -17,14 +17,14 @@ function Landing() {
       <div className={styles.overlay}></div>
 
       {/* Background image */}
-      <Image src='/background.jpg' alt='Background' fill className='object-cover h-full w-full absolute inset-0 z-0' />
+      <Image src='/background.jpg' alt='Background' fill className='object-cover h-full w-full absolute inset-0 z-0 opacity-80' />
 
       {/* Navigation */}
       <div className='z-20'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='flex justify-between items-center py-6 md:justify-start md:space-x-10'>
             <div className='flex justify-start lg:w-0 lg:flex-1 text-2xl font-semibold'>
-              <Image src='/facetrakk-tr-logo.png' alt='logo' width={200} height={100} className='mb-12' />
+              <Image className='mb-12' src='/facetrakk-landing-logo.png' alt='logo' width={180} height={70} />
             </div>
 
             <nav className='hidden md:flex space-x-10 text-lg font-medium'>
