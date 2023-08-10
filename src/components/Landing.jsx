@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import styles from '../styles/Header.module.css';
 import Link from 'next/link';
-import Button from './Button';
+import { Button } from '@mui/material';
 
 function Landing() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,14 +17,19 @@ function Landing() {
       <div className={styles.overlay}></div>
 
       {/* Background image */}
-      <Image src='/background.jpg' alt='Background' fill className='object-cover h-full w-full absolute inset-0 z-0 opacity-80' />
+      <Image
+        src='/landing-image.jpg'
+        alt='Background'
+        fill
+        className='object-cover h-full w-full absolute inset-0 z-0 opacity-100'
+      />
 
       {/* Navigation */}
       <div className='z-20'>
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-          <div className='flex justify-between items-center py-6 md:justify-start md:space-x-10'>
+        <div className='max-w-[85%] mx-auto px-4 sm:px-6 lg:px-8'>
+          <div className='flex justify-between items-center py-2 md:justify-start md:space-x-10'>
             <div className='flex justify-start lg:w-0 lg:flex-1 text-2xl font-semibold'>
-              <Image className='mb-12' src='/facetrakk-landing-logo.png' alt='logo' width={180} height={70} />
+              <Image className='mb-12' src='/forbmax-logo3.png' alt='logo' width={120} height={70} />
             </div>
 
             <nav className='hidden md:flex space-x-10 text-lg font-medium'>
@@ -77,7 +82,7 @@ function Landing() {
 
         {/* Render mobile menu when isOpen state is true */}
         {isOpen && (
-          <div className='md:hidden absolute inset-x-0 bg-gray-600 h-24'>
+          <div className='md:hidden absolute inset-x-0 bg-gray-600 h-16'>
             <div className='flex flex-col items-center pt-2 pb-3 space-y-3 sm:px-3'>
               <Link
                 className='text-base font-medium text-white hover:text-gray-200 bg-gray-500 hover:bg-gray-400 w-full text-center py-1'
@@ -96,13 +101,13 @@ function Landing() {
       </div>
       {/* Navigation ends */}
 
-      <div className='flex flex-col items-center justify-center w-10/12 md:w-4/5 lg:w-2/3 xl:w-1/2 mx-auto z-10 text-white space-y-8 my-auto'>
-        <h1 className='text-3xl text-center font-bold text-white md:text-5xl md:tracking-widest'>
-          Unlock with a glance. Experience seamless facial recognition today!
+      <div className='absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-10/12 md:w-4/5 lg:w-2/3 xl:w-1/2 mx-auto z-10 text-white space-y-8 my-auto'>
+        <h1 className='text-2xl text-center font-semibold text-white md:text-4xl md:tracking-widest'>
+          Unlock with a glance, experience seamless facial recognition today!
         </h1>
 
         <Link href='/register'>
-          <Button className='py-2 px-10' variant='contained'>
+          <Button className='p-2 px-8' color='primary' variant='contained' size='large'>
             Register
           </Button>
         </Link>

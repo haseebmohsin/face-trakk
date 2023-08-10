@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Loader from '../Loader';
 import TableDropdown from './TableDropdown';
-import VideoPlayerModal from '../VideoPlayerModal';
+import VideoPlayerModal from '../modals/VideoPlayerModal';
 
 export default function TableBody(props) {
   const { data, fields, isLoading, actions, handleDetails, handleEdit, handleDelete } = props;
@@ -38,7 +38,15 @@ export default function TableBody(props) {
             item[field] = item[field].toString().substring(0, 10);
           }
 
-          const fieldValue = item[field];
+          let fieldValue = item[field];
+
+          if (field === 'startTime') {
+            fieldValue = fieldValue[0];
+          }
+
+          if (field === 'endTime') {
+            fieldValue = fieldValue[fieldValue.length - 1];
+          }
 
           const renderValue = () => {
             if (fieldValue === '') {
@@ -101,7 +109,7 @@ export default function TableBody(props) {
         isOpen={isVideoPlayerOpen}
         closeVideoPlayer={closeVideoPlayer}
         videoUrl='/videos/output.mp4'
-        startTime={startTime}
+        startTime={startTime[0]}
       />
     </>
   );

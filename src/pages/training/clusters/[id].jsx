@@ -5,19 +5,21 @@ import Image from 'next/image';
 import makeRequest from '@/utils/makeRequest';
 import Button from '@/components/Button';
 import Select from '@/components/Select';
-import InputModel from '@/components/InputModel';
+import InputModal from '@/components/modals/InputModal';
+import MoveToNewClusterModal from '@/components/mui/modals/MoveToNewClusterModal';
 
 const ClusterDetails = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const [isInputModelOpen, setIsInputModelOpen] = useState(false);
+  const [isInputModalOpen, setIsInputModalOpen] = useState(false);
+  const [isMoveToNewClusterModalOpen, setIsMoveToNewClusterModalOpen] = useState(false);
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(true);
 
   const [personNames, setPersonNames] = useState([]);
   const [clusterDetailsData, setClusterDetailsData] = useState(null);
-  const [correctedName, setCorrectedName] = useState(clusterDetailsData?.faceImagesArray[0]?.faceName.replace(/[0-9]/g, ''));
+  const [correctedName, setCorrectedName] = useState(clusterDetailsData?.faceImagesArray[0]?.faceName.split('_')[0]);
 
   // State to store the selected item _ids
   const [selectedItemIds, setSelectedItemIds] = useState([]);
@@ -46,7 +48,7 @@ const ClusterDetails = () => {
 
   const fetchClusterDetails = async () => {
     try {
-      const response = await makeRequest({ path: `api/video/getClusterData/${id}` });
+      const response = await makeRequest({ path: `api/training/getClusterData/${id}` });
       setClusterDetailsData(response.cluster);
     } catch (error) {
       toast.error(error?.message || 'Something went wrong!');
@@ -56,25 +58,29 @@ const ClusterDetails = () => {
   };
 
   const handleSubmit = async () => {
+    if (selectedItemIds.length < 5) {
+      toast.error('You must select minimum 5 images');
+      return;
+    }
+
     setIsSubmitLoading(true);
 
     const data = {
       cluster_id: clusterDetailsData._id,
-      xml_path: 'scripts/dataset_generate',
-      old_names_array: clusterDetailsData?.faceImagesArray.map((item) => item.faceName),
-      new_label: correctedName,
+      selectedItemIds,
+      label: correctedName.replace(/\s+/g, '_'),
     };
 
     try {
       const response = await makeRequest({
         method: 'POST',
-        path: 'api/video/xmlUpdate',
+        path: 'api/training/createAdditionalTrainingDatasets',
         data,
       });
 
       if (response) {
-        toast.success('Thanks for the correction');
-        router.push('/training');
+        toast.success(response?.message || 'Done!');
+        router.push('/training/clusters');
       }
     } catch (error) {
       toast.error(error?.message || 'Something went wrong!');
@@ -94,17 +100,22 @@ const ClusterDetails = () => {
     });
   };
 
-  const handleMoveToCluster = async () => {
+  const handleMoveToNewCluster = async (clusterId) => {
+    const data = {
+      clusterId: clusterId || '',
+      selectedItemIds,
+    };
+
     try {
       const response = await makeRequest({
         method: 'POST',
-        path: 'api/video/moveToCluster',
-        data: { selectedItemIds },
+        path: 'api/training/moveToNewCluster',
+        data,
       });
 
       if (response) {
         toast.success(response?.message);
-        router.push('/training');
+        router.push('/training/clusters');
       }
     } catch (error) {
       toast.error(error?.message || 'Something went wrong!');
@@ -112,7 +123,7 @@ const ClusterDetails = () => {
   };
 
   const handleAddNewName = () => {
-    setIsInputModelOpen(true);
+    setIsInputModalOpen(true);
   };
 
   return (
@@ -137,46 +148,45 @@ const ClusterDetails = () => {
           </div>
         </div>
 
-        <Button className='mr-5' onClick={handleMoveToCluster}>
-          Move to New Cluster
-        </Button>
+        {selectedItemIds.length > 0 && (
+          <Button className='' onClick={() => setIsMoveToNewClusterModalOpen(true)}>
+            Move to New Cluster
+          </Button>
+        )}
       </div>
 
-      {isPageLoading && <div>Loading Details...</div>}
+      {isPageLoading && <p className='text-center text-xl'>Loading Data...</p>}
 
       {!isPageLoading && clusterDetailsData && (
-        <div className='grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 mt-2'>
+        <div className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-8 mt-2'>
           {clusterDetailsData.faceImagesArray.map((item) => (
-            <div key={item._id} className='p-1 rounded-md relative select-none'>
-              <div className='absolute top-0 right-3 rounded-full bg-gray-300 px-1'>
-                <input
-                  className='h-4 w-4 cursor-pointer mt-1'
-                  type='checkbox'
-                  checked={selectedItemIds.includes(item._id)}
-                  onChange={() => handleCheckboxChange(item._id)}
-                />
+            <div key={item._id} className='p-1 rounded-md  select-none'>
+              <div className='relative w-32 h-32 cursor-pointer' onClick={() => handleCheckboxChange(item._id)}>
+                <div className='absolute -top-1 -right-1 rounded-full bg-gray-300 px-1 z-50'>
+                  <input
+                    className='h-4 w-5 cursor-pointer mt-1'
+                    type='checkbox'
+                    checked={selectedItemIds.includes(item._id)}
+                    readOnly
+                  />
+                </div>
+
+                <Image src={`data:image/jpeg;base64,${item.faceImage}`} alt={item.faceName} fill />
+
+                <p className='text-center mt-2 absolute z-50 -bottom-6 left-0'>{item.faceName}</p>
               </div>
-
-              {/* <div
-                className='absolute top-0 right-3 cursor-pointer rounded-full bg-gray-400 px-2'
-                onClick={() => handleOnDiscard(item.faceName)}>
-                <strong className='text-2xl text-red-600'>&times;</strong>
-              </div> */}
-
-              <Image
-                src={`data:image/jpeg;base64,${item.faceImage}`}
-                alt={item.faceName}
-                width={180}
-                height={80}
-                objectFit='cover'
-              />
-              <p className='text-center mt-2'>{item.faceName}</p>
             </div>
           ))}
         </div>
       )}
 
-      <InputModel isOpen={isInputModelOpen} closeModal={() => setIsInputModelOpen(false)} />
+      <InputModal isOpen={isInputModalOpen} closeModal={() => setIsInputModalOpen(false)} />
+
+      <MoveToNewClusterModal
+        isOpen={isMoveToNewClusterModalOpen}
+        closeModal={() => setIsMoveToNewClusterModalOpen(false)}
+        handleMoveToNewCluster={handleMoveToNewCluster}
+      />
     </div>
   );
 };

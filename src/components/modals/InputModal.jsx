@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import makeRequest from '@/utils/makeRequest';
 import { toast } from 'react-hot-toast';
-import Input from './Input';
-import Button from './Button';
+import Input from '../Input';
+import Button from '../Button';
 
-const InputModel = ({ isOpen, closeModal }) => {
+const InputModal = ({ isOpen, closeModal }) => {
   if (!isOpen) return null;
 
   const [name, setName] = useState('');
@@ -79,4 +79,4 @@ const InputModel = ({ isOpen, closeModal }) => {
   );
 };
 
-export default InputModel;
+export default InputModal;

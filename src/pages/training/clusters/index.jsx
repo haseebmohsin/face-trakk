@@ -43,7 +43,7 @@ const Clusters = () => {
     formData.append('video', file);
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/api/video/upload`, formData, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/api/training/uploadVideo`, formData, {
         onUploadProgress: (progressEvent) => {
           const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
           setUploadPercentage(progress);
@@ -72,7 +72,7 @@ const Clusters = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await makeRequest({ path: `api/video/getClustersData` });
+        const response = await makeRequest({ path: `api/training/getClustersData` });
 
         setClusterData(response?.clusters);
       } catch (error) {
@@ -91,7 +91,7 @@ const Clusters = () => {
     try {
       const response = await makeRequest({
         method: 'POST',
-        path: 'api/video/startTraining',
+        path: 'api/training/startTraining',
         data: {},
       });
 
@@ -174,21 +174,22 @@ const Clusters = () => {
 
         {!isClusterDataFetchLoading && clusterData?.length === 0 && <div className='m-14 text-lg'>No data found.</div>}
 
-        <div className='grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-10'>
+        <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 mt-10'>
           {clusterData?.map((item, index) => (
-            <div key={item._id} className='flex flex-col items-center' onClick={() => router.push(`/training/${item._id}`)}>
-              <div className='p-2 rounded-md relative cursor-pointer'>
+            <div
+              key={item._id}
+              className='flex flex-col items-center'
+              onClick={() => router.push(`/training/clusters/${item._id}`)}>
+              <div className='p-2 rounded-md relative cursor-pointer w-32 h-32'>
                 <Image
                   className='cursor-pointer rounded-md transition-transform hover:scale-105'
                   src={`data:item/jpeg;base64,${item.faceImagesArray[0]?.faceImage}`}
                   alt='person'
-                  width={180}
-                  height={80}
-                  objectFit='cover'
+                  fill
                 />
-
-                <p className='text-center mt-2 text-xl'>{item.faceImagesArray[0]?.faceName.replace(/[0-9]/g, '')}</p>
               </div>
+
+              <p className='text-center mt-2 text-xl'>{item.faceImagesArray[0]?.faceName.split('_')[0]}</p>
             </div>
           ))}
         </div>

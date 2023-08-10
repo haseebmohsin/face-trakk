@@ -4,6 +4,8 @@ const VideoPlayerModal = ({ isOpen, closeVideoPlayer, videoUrl, startTime }) => 
   const videoRef = useRef(null);
 
   const parseTimeToSeconds = (time) => {
+    console.log(time);
+
     const timeParts = time.split(':').map(parseFloat);
     const [hours, minutes, seconds] = timeParts;
 
